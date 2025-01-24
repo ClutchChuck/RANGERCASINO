@@ -18,8 +18,15 @@ const WalletConnector: React.FC = () => {
   const [account, setAccount] = useState<string | null>(null);
   const [balance, setBalance] = useState<string | null>(null);
   const [network, setNetwork] = useState<string | null>(null);
+  const [tokenBalance, setTokenBalance] = useState<string | null>(null);
 
   const correctNetworkId = '0x609E'; // Chain ID for MINTME network in hexadecimal
+  const tokenContractAddress = '0x5fed7eb4b29e9b2e2758ac40c9ec4b4e67098192';
+
+  const erc20Abi = [
+    "function balanceOf(address) view returns (uint256)",
+    "function decimals() view returns (uint8)",
+  ];
 
   useEffect(() => {
     const savedAccount = localStorage.getItem('account');
@@ -91,6 +98,20 @@ const WalletConnector: React.FC = () => {
     }
   }, [account]);
 
+  useEffect(() => {
+    const fetchTokenBalance = async () => {
+      if (active && account) {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const contract = new ethers.Contract(tokenContractAddress, erc20Abi, provider);
+        const balance = await contract.balanceOf(account);
+        const decimals = await contract.decimals();
+        const formattedBalance = ethers.formatUnits(balance, decimals);
+        setTokenBalance(parseFloat(formattedBalance).toFixed(3)); // Format the token balance with 3 decimals
+      }
+    };
+    fetchTokenBalance();
+  }, [active, account]);
+
   const connectWallet = async () => {
     if (window.ethereum) {
       try {
@@ -115,6 +136,7 @@ const WalletConnector: React.FC = () => {
     setActive(false);
     setBalance(null);
     setNetwork(null);
+    setTokenBalance(null);
     localStorage.removeItem('account');
     localStorage.removeItem('network');
   };
@@ -128,6 +150,9 @@ const WalletConnector: React.FC = () => {
           </div>
           <div className="bg-gray-800 p-2 rounded text-sm">
             Balance: {balance} MINTME
+          </div>
+          <div className="bg-gray-800 p-2 rounded text-sm flex items-center">
+            RANGER: {tokenBalance} <img src="/logo.png" alt="Ranger Token" className="inline-block ml-2 w-4 h-4"/>
           </div>
           <div className="bg-gray-800 p-2 rounded text-sm flex items-center">
             Network: <img src="/mintme.png" alt="MintMe" className="inline-block ml-2 w-4 h-4"/>

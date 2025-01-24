@@ -21,7 +21,12 @@ const Header: React.FC = () => {
       <nav className="flex flex-col md:flex-row md:items-center md:flex-grow md:ml-6">
         <Link href="/coinflip" legacyBehavior>
           <a className="mr-0 md:mr-6 mb-2 md:mb-0 cursor-pointer text-lg hover:text-yellow-500 transition duration-300">
-            Coin Flip
+            CoinFlip
+          </a>
+        </Link>
+        <Link href="/slots" legacyBehavior>
+          <a className="mr-0 md:mr-6 mb-2 md:mb-0 cursor-pointer text-lg hover:text-yellow-500 transition duration-300">
+            Slots
           </a>
         </Link>
         <Dropdown isOpen={isOpen} onOpenChange={setIsOpen}>
